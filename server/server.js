@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Todo = require("./models/Todo");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -11,12 +12,9 @@ app.use(cors({ origin: "http://localhost:3000" }));
 // Local MongoDB (change DB name if you want)
 
 mongoose
-    .connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.error("MongoDB error", err));
+    .catch((err) => console.error(err));
 
 // GET all
 app.get("/api/todos", async (req, res) => {
@@ -67,6 +65,14 @@ app.delete("/api/todos/:id", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/build")));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+    });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
