@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Todo = require("./models/Todo");
-const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -80,14 +79,6 @@ app.delete("/api/todos/:id", async (req, res) => {
 // =======================
 // SERVE FRONTEND (production)
 // =======================
-if (process.env.NODE_ENV === "production") {
-    // For CRA -> build, For Vite -> dist
-    app.use(express.static(path.join(__dirname, "../client/dist")));
-
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
-    });
-}
 
 // =======================
 // START SERVER
