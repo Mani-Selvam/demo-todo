@@ -1,0 +1,17 @@
+{
+    "name": "my-app",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "server": "cd server && nodemon server.js",
+        "client": "cd client && npm start"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "ajv": "^8.17.1"
+    }
+}
