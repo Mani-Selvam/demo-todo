@@ -6,27 +6,38 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
 
-// Local MongoDB (change DB name if you want)
+// Allow local dev + production frontend
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    })
+);
 
+// MongoDB connection
 mongoose
     .connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.error(err));
+    .then(() => console.log("✅ MongoDB connected"))
+    .catch((err) => console.error("❌ MongoDB error:", err));
 
-// GET all
+// =======================
+// API ROUTES
+// =======================
+
+// GET all todos
 app.get("/api/todos", async (req, res) => {
     try {
         const todos = await Todo.find().sort({ createdAt: -1 });
-        res.json(todos); // ✅ must be an array
+        res.json(todos);
     } catch (err) {
         res.status(500).json({ error: "Server error" });
     }
 });
 
-// POST create
+// POST create todo
 app.post("/api/todos", async (req, res) => {
     const { text, email } = req.body;
     if (!text || !email)
@@ -39,7 +50,7 @@ app.post("/api/todos", async (req, res) => {
     }
 });
 
-// PUT update
+// PUT update todo
 app.put("/api/todos/:id", async (req, res) => {
     const { text, email } = req.body;
     try {
@@ -55,7 +66,7 @@ app.put("/api/todos/:id", async (req, res) => {
     }
 });
 
-// DELETE
+// DELETE todo
 app.delete("/api/todos/:id", async (req, res) => {
     try {
         const todo = await Todo.findByIdAndDelete(req.params.id);
@@ -66,13 +77,20 @@ app.delete("/api/todos/:id", async (req, res) => {
     }
 });
 
+// =======================
+// SERVE FRONTEND (production)
+// =======================
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../client/build")));
+    // For CRA -> build, For Vite -> dist
+    app.use(express.static(path.join(__dirname, "../client/dist")));
 
     app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+        res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
     });
 }
 
+// =======================
+// START SERVER
+// =======================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
