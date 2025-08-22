@@ -20,7 +20,8 @@
     "description": "",
     "dependencies": {
         "ajv": "^8.17.1",
-        "concurrently": "^9.2.0"
+        "concurrently": "^9.2.0",
+        "path-to-regexp": "^8.2.0"
     },
     "engines": {
         "node": "20.x"

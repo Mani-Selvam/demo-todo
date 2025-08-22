@@ -127,7 +127,6 @@ app.use(express.static(buildPath));
 
 // Catch-all route to serve index.html for any non-API routes
 app.get("*", (req, res) => {
-    // Don't serve React app for API routes
     if (req.path.startsWith("/api/")) {
         return res.status(404).json({ error: "API endpoint not found" });
     }
