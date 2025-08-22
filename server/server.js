@@ -34,6 +34,11 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok", time: new Date() });
 });
 
+// Test route for debugging
+app.get("/test", (req, res) => {
+    res.json({ message: "API is working!", timestamp: new Date() });
+});
+
 // GET all todos
 app.get("/api/todos", async (req, res) => {
     try {
@@ -95,16 +100,18 @@ app.delete("/api/todos/:id", async (req, res) => {
     }
 });
 
-// Serve React in production
-if (process.env.NODE_ENV === "production") {
-    // Serve static files from React build
-    app.use(express.static(path.join(__dirname, "../client/build")));
+// Serve React app (always in production)
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, "../client/build")));
 
-    // Catch-all route to serve index.html
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../client/build/index.html"));
-    });
-}
+// Catch-all route to serve index.html for any non-API routes
+app.get("*", (req, res) => {
+    // Don't serve React app for API routes
+    if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ error: "API endpoint not found" });
+    }
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
