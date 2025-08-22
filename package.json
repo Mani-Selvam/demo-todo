@@ -1,14 +1,17 @@
 {
     "name": "my-app",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "server/server.js",
     "scripts": {
         "dev": "concurrently \"npm run server\" \"npm run client\"",
         "server": "cd server && node server.js",
+        "start:dev": "nodemon server/server.js",
         "client": "cd client && npm start",
+        "client:build": "cd client && npm run build",
         "start": "node server/server.js",
         "build": "cd client && npm install && npm run build",
-        "heroku-postbuild": "cd client && npm install && npm run build"
+        "heroku-postbuild": "cd client && npm install && npm run build",
+        "postinstall": "cd client && npm install && npm run build"
     },
     "keywords": [],
     "author": "",
@@ -17,5 +20,8 @@
     "dependencies": {
         "ajv": "^8.17.1",
         "concurrently": "^9.2.0"
+    },
+    "engines": {
+        "node": "18.x"
     }
 }
