@@ -11,7 +11,7 @@ export default function App() {
     // READ
     useEffect(() => {
         setLoading(true);
-        fetch(`${process.env.REACT_APP_API_URL || ""}/api/todos`)
+        fetch("/api/todos")
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) setTodos(data);
@@ -28,14 +28,11 @@ export default function App() {
     async function addTodo(e) {
         e.preventDefault();
         if (!text || !email) return;
-        const res = await fetch(
-            `${process.env.REACT_APP_API_URL || ""}/api/todos`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, email }),
-            }
-        );
+        const res = await fetch("/api/todos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, email }),
+        });
         if (!res.ok) return alert("Add failed");
         const newTodo = await res.json();
         setTodos([newTodo, ...todos]);
@@ -53,14 +50,11 @@ export default function App() {
     // UPDATE
     async function updateTodo(e) {
         e.preventDefault();
-        const res = await fetch(
-            `${process.env.REACT_APP_API_URL || ""}/api/todos/${editId}`,
-            {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, email }),
-            }
-        );
+        const res = await fetch(`/api/todos/${editId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, email }),
+        });
         if (!res.ok) return alert("Update failed");
         const updated = await res.json();
         setTodos(todos.map((t) => (t._id === editId ? updated : t)));
@@ -72,10 +66,7 @@ export default function App() {
     // DELETE
     async function deleteTodo(id) {
         if (!window.confirm("Delete this todo?")) return;
-        const res = await fetch(
-            `${process.env.REACT_APP_API_URL || ""}/api/todos/${id}`,
-            { method: "DELETE" }
-        );
+        const res = await fetch(`/api/todos/${id}`, { method: "DELETE" });
         if (!res.ok) return alert("Delete failed");
         setTodos(todos.filter((t) => t._id !== id));
     }
