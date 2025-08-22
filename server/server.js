@@ -10,13 +10,7 @@ app.use(cors({ origin: "http://localhost:3000" }));
 
 // Local MongoDB (change DB name if you want)
 
-mongoose
-    .connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => console.log("MongoDB connected"))
-    .catch((err) => console.error("MongoDB error", err));
+mongoose.connect(process.env.MONGO_URI);
 
 // GET all
 app.get("/api/todos", async (req, res) => {
