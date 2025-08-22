@@ -100,9 +100,30 @@ app.delete("/api/todos/:id", async (req, res) => {
     }
 });
 
+// Debug route to check if build files exist
+app.get("/debug", (req, res) => {
+    const buildPath = path.join(__dirname, "../client/build");
+    const indexPath = path.join(buildPath, "index.html");
+    const fs = require("fs");
+
+    res.json({
+        buildPath,
+        indexPath,
+        buildExists: fs.existsSync(buildPath),
+        indexExists: fs.existsSync(indexPath),
+        buildContents: fs.existsSync(buildPath)
+            ? fs.readdirSync(buildPath)
+            : "Build directory not found",
+    });
+});
+
 // Serve React app (always in production)
 // Serve static files from React build
-app.use(express.static(path.join(__dirname, "../client/build")));
+const buildPath = path.join(__dirname, "../client/build");
+console.log("🔍 Build path:", buildPath);
+console.log("🔍 Build exists:", require("fs").existsSync(buildPath));
+
+app.use(express.static(buildPath));
 
 // Catch-all route to serve index.html for any non-API routes
 app.get("*", (req, res) => {
@@ -110,7 +131,20 @@ app.get("*", (req, res) => {
     if (req.path.startsWith("/api/")) {
         return res.status(404).json({ error: "API endpoint not found" });
     }
-    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+
+    const indexPath = path.join(buildPath, "index.html");
+    console.log("🎯 Serving React app for:", req.path);
+    console.log("🎯 Index path:", indexPath);
+
+    res.sendFile(indexPath, (err) => {
+        if (err) {
+            console.error("❌ Error serving index.html:", err);
+            res.status(500).json({
+                error: "Failed to serve React app",
+                details: err.message,
+            });
+        }
+    });
 });
 
 const PORT = process.env.PORT || 5000;
